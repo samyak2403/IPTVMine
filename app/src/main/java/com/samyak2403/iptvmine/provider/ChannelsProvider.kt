@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samyak2403.iptvmine.model.Channel
+import com.samyak2403.iptvmine.utils.ContentFilter
 import kotlinx.coroutines.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -247,16 +248,21 @@ class ChannelsProvider : ViewModel() {
                         streamUrl = line
                         validUrlCount++
                         
+                        // Filter out adult content using ContentFilter
                         if (!name.isNullOrEmpty() && !streamUrl.isNullOrEmpty()) {
-                            channelsList.add(
-                                Channel(
-                                    name = name,
-                                    logoUrl = logoUrl,
-                                    streamUrl = streamUrl,
-                                    category = category ?: "Uncategorized"
+                            if (!ContentFilter.shouldBlockContent(name, category)) {
+                                channelsList.add(
+                                    Channel(
+                                        name = name,
+                                        logoUrl = logoUrl,
+                                        streamUrl = streamUrl,
+                                        category = category ?: "Uncategorized"
+                                    )
                                 )
-                            )
-                            Log.d(TAG, "Added channel: $name with URL: ${streamUrl.take(50)}")
+                                Log.d(TAG, "Added channel: $name with URL: ${streamUrl.take(50)}")
+                            } else {
+                                Log.d(TAG, "Blocked content: $name (Category: $category)")
+                            }
                         }
                         
                         name = null
@@ -385,7 +391,8 @@ class ChannelsProvider : ViewModel() {
         val uniqueCategories = HashSet<String>()
         for (channel in channelList) {
             val cat = channel.category
-            if (!cat.isNullOrEmpty()) {
+            // Filter out adult categories using ContentFilter
+            if (!cat.isNullOrEmpty() && !ContentFilter.isBlockedCategory(cat)) {
                 uniqueCategories.add(cat)
             }
         }
