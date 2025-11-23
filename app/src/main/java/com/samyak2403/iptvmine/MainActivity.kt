@@ -2,18 +2,22 @@ package com.samyak2403.iptvmine
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.samyak2403.iptvmine.screens.AboutFragment
 import com.samyak2403.iptvmine.screens.HomeFragment
+import com.samyak2403.iptvmine.utils.ThemeManager
 import me.ibrahimsn.lib.SmoothBottomBar
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved theme before setContentView
+        ThemeManager.applyTheme(this)
+        
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -31,13 +35,10 @@ class MainActivity : AppCompatActivity() {
 
         // Set up SmoothBottomBar item selection listener
         bottomBar.setOnItemSelectedListener {
-
-                when (it) {
-                    0 -> replaceFragment(HomeFragment()) // First menu item for Home
-//                    1 -> replaceFragment(AboutFragment()) // Second menu item for About
-                }
-
-
+            when (it) {
+                0 -> replaceFragment(HomeFragment()) // First menu item for Home
+                1 -> replaceFragment(AboutFragment()) // Second menu item for About
+            }
         }
     }
 
