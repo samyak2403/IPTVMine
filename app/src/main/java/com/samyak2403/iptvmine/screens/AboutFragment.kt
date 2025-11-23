@@ -40,20 +40,30 @@ class AboutFragment : Fragment() {
         binding.tvAppVersion.text = getAppVersion()
 
         // Set dark mode switch state
-        binding.switchDarkMode.isChecked = ThemeManager.isDarkModeEnabled(requireContext())
+        binding.switchDarkMode.setChecked(ThemeManager.isDarkModeEnabled(requireContext()))
     }
 
     private fun setupClickListeners() {
         // Dark mode switch
-        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            ThemeManager.setDarkMode(requireContext(), isChecked)
-            val message = if (isChecked) "Dark mode enabled" else "Light mode enabled"
+        binding.switchDarkMode.setOnCheckChangeListener(object : com.samyak.custom_switch.MaterialCustomSwitch.OnCheckChangeListener {
+            override fun onCheckChanged(isChecked: Boolean) {
+                ThemeManager.setDarkMode(requireContext(), isChecked)
+                val message = if (isChecked) "Dark mode enabled" else "Light mode enabled"
+                android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
+            }
+        })
 
+        // About App Card
+        binding.cardAboutApp.setOnClickListener {
+            val intent = Intent(requireContext(), AppInfoActivity::class.java)
+            startActivity(intent)
         }
 
-
-
-
+        // Internet Speed Tester
+        binding.CardInternetSpeed.setOnClickListener {
+//            val intent = Intent(requireContext(), com.samyak2403.iptvmine.InternetSpeed.InternetSpeedActivity::class.java)
+//            startActivity(intent)
+        }
 
 
     }
@@ -68,34 +78,6 @@ class AboutFragment : Fragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             "Version info not available"
         }
-    }
-
-    private fun shareApp() {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(
-                Intent.EXTRA_TEXT,
-                "The Indian IPTV App is a comprehensive platform that allows users to stream over 500 Indian TV channels directly from their devices. The app provides a seamless streaming experience with a wide variety of channels, including news, entertainment, sports, movies, and regional content.\n\nDownload now: https://github.com/samyak2403/IPTVmine?tab=readme-ov-file#indian-iptvmine-app-1"
-            )
-        }
-        startActivity(Intent.createChooser(shareIntent, "Share App via"))
-    }
-
-    private fun showAppInfo() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_app_info, null)
-
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            .create()
-
-        dialog.show()
-    }
-
-    private fun openDownloadLink() {
-        val url = "https://github.com/samyak2403/IPTVmine?tab=readme-ov-file#indian-iptvmine-app-1"
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(intent)
     }
 
     override fun onDestroyView() {

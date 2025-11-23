@@ -38,6 +38,14 @@
             android:name=".screens.PlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout"
             android:exported="true" />
+        <activity
+            android:name=".screens.AppInfoActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+<!--        <activity-->
+<!--           -->
+<!--            android:exported="false"-->
+<!--            android:parentActivityName=".MainActivity" />-->
     </application>
 
 </manifest>

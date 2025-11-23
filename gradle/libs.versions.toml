@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.1"
+agp = "8.13.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -18,6 +18,9 @@ doubleTapPlayerView = "1.0.4"
 fragment = "1.8.2"
 cronetEmbedded = "119.6045.31"
 smoothbottombar = "1.7.9"
+sdp = "1.1.0"
+ssp = "1.1.0"
+lottie = "6.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,8 +40,11 @@ verticalSeekbar = {group = "com.github.lukelorusso", name = "VerticalSeekBar", v
 doubleTapPlayerView = {group = "com.github.vkay94", name = "DoubleTapPlayerView", version.ref = "doubleTapPlayerView"}
 cronet-embedded = { group = "org.chromium.net", name = "cronet-embedded", version.ref = "cronetEmbedded" }
 smoothbottombar = { module = "com.github.ibrahimsn98:SmoothBottomBar", version.ref = "smoothbottombar" }
-
+sdp-android = { module = "com.intuit.sdp:sdp-android", version.ref = "sdp" }
+ssp-android = { module = "com.intuit.ssp:ssp-android", version.ref = "ssp" }
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 

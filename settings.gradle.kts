@@ -25,4 +25,5 @@ dependencyResolutionManagement {
 //,":bettervideoplayer"
 rootProject.name = "IPTV"
 include(":app")
+include(":custom-switch")
 //include(":bettervideoplayer")

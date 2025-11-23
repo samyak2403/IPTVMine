@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.samyak2403.iptvmine.MainActivity
 import com.samyak2403.iptvmine.R
 import com.samyak2403.iptvmine.adapter.ChannelsAdapter
 import com.samyak2403.iptvmine.model.Channel
@@ -33,14 +34,12 @@ class HomeFragment : Fragment() {
 
     private lateinit var channelsProvider: ChannelsProvider
     private lateinit var searchEditText: EditText
-    private lateinit var searchIcon: ImageView
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
     private lateinit var chipGroup: ChipGroup
     private lateinit var adapter: ChannelsAdapter
 
     private var debounceHandler: Handler? = null
-    private var isSearchVisible: Boolean = false
     private var allChannels: List<Channel> = emptyList()
     private var selectedCategory: String? = "All"
 
@@ -51,11 +50,12 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         channelsProvider = ViewModelProvider(this)[ChannelsProvider::class.java]
-        searchEditText = view.findViewById(R.id.searchEditText)
-        searchIcon = view.findViewById(R.id.search_icon)
         progressBar = view.findViewById(R.id.progressBar)
         recyclerView = view.findViewById(R.id.recyclerView)
         chipGroup = view.findViewById(R.id.categoryChipGroup)
+
+        // Get search EditText from MainActivity
+        searchEditText = (activity as? MainActivity)?.getSearchEditText() ?: EditText(requireContext())
 
         adapter = ChannelsAdapter { channel: Channel ->
             PlayerActivity.start(requireContext(), channel)
@@ -66,10 +66,6 @@ class HomeFragment : Fragment() {
 
         setupObservers()
         fetchData()
-
-        searchIcon.setOnClickListener {
-            toggleSearchBar()
-        }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -145,19 +141,6 @@ class HomeFragment : Fragment() {
                 }
             }
             chipGroup.addView(chip)
-        }
-    }
-
-    private fun toggleSearchBar() {
-        if (isSearchVisible) {
-            searchEditText.visibility = View.GONE
-            searchEditText.text.clear()
-            isSearchVisible = false
-            channelsProvider.filterChannelsByCategory(selectedCategory)
-        } else {
-            searchEditText.visibility = View.VISIBLE
-            searchEditText.requestFocus()
-            isSearchVisible = true
         }
     }
 

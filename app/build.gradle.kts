@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.samyak2403.iptvmine"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 36
         versionCode = 5
         versionName = "1.0.4"
@@ -90,6 +90,12 @@ dependencies {
     
     // CircleImageView for circular images
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    
+    // Lottie for animations
+    implementation(libs.lottie)
+    
+    // Custom Switch Module
+    implementation(project(":custom-switch"))
 
     implementation("com.google.code.gson:gson:2.8.8")
 

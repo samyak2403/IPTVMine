@@ -26,3 +26,4 @@ include(":app")
 rootProject.name = "IPTV"
 
 //include ':bettervideoplayer'
+include ':custom-switch'
