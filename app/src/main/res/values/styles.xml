@@ -5,4 +5,59 @@
         <item name="colorControlHighlight">@android:color/darker_gray</item>
         <item name="android:background">?selectableItemBackgroundBorderless</item>
     </style>
+
+    <style name="DialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+
+    <style name="AlertDialogCustom" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:textColorAlertDialogListItem">@android:color/white</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButtonStyle</item>
+    </style>
+
+    <style name="SubtitleDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:background">@color/black</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorAlertDialogListItem">@color/white</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="buttonBarNegativeButtonStyle">@style/SubtitleButtonStyle</item>
+        <item name="android:windowBackground">@color/black</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/SubtitleTitleStyle</item>
+    </style>
+
+    <style name="SubtitleTitleStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="NavDrawerTextStyle" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+    <style name="fab_3_rounded">
+
+        <item name="cornerSize">50%</item>
+
+    </style>
+
+    <style name="CustomCastExpandedController" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
+    <style name="SubtitleButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/white</item>
+        <item name="rippleColor">@color/white</item>
+    </style>
 </resources>

@@ -1,14 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Created by Samyak kamble on 8/14/24, 11:42 AM
-  ~  Copyright (c) 2024 . All rights reserved.
-  ~  Last modified 8/14/24, 11:42 AM
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.exoplayer2.ui.PlayerView
+    <androidx.media3.ui.PlayerView
         android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

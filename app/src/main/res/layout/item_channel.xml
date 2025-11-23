@@ -14,15 +14,34 @@
         android:id="@+id/logoImageView"
         android:layout_width="70dp"
         android:layout_height="70dp"
-
+        android:contentDescription="Channel Logo"
         android:src="@drawable/ic_tv" />
 
-    <TextView
-        android:id="@+id/nameTextView"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
-        android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/categoryTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
 </LinearLayout>

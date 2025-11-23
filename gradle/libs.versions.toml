@@ -9,11 +9,15 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.1"
 constraintlayout = "2.1.4"
-exoplayerCoreVer = "2.16.1"
-exoplayerUiVer = "2.16.1"
-exoplayerDashVer = "2.16.1"
+exoplayerCoreVer = "2.19.1"
+exoplayerUiVer = "2.19.1"
+exoplayerDashVer = "2.19.1"
+exoplayerHlsVer = "2.19.1"
+verticalSeekbarBar = "1.2.7"
+doubleTapPlayerView = "1.0.4"
 fragment = "1.8.2"
 cronetEmbedded = "119.6045.31"
+smoothbottombar = "1.7.9"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,8 +31,12 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 exoplayerCore = {group = "com.google.android.exoplayer", name = "exoplayer", version.ref = "exoplayerCoreVer"}
 exoplayerUi = {group = "com.google.android.exoplayer", name = "exoplayer-ui", version.ref = "exoplayerUiVer"}
 exoplayerDash = {group = "com.google.android.exoplayer", name = "exoplayer-dash", version.ref = "exoplayerDashVer"}
+exoplayerHls = {group = "com.google.android.exoplayer", name = "exoplayer-hls", version.ref = "exoplayerHlsVer"}
 androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
+verticalSeekbar = {group = "com.github.lukelorusso", name = "VerticalSeekBar", version.ref = "verticalSeekbarBar"}
+doubleTapPlayerView = {group = "com.github.vkay94", name = "DoubleTapPlayerView", version.ref = "doubleTapPlayerView"}
 cronet-embedded = { group = "org.chromium.net", name = "cronet-embedded", version.ref = "cronetEmbedded" }
+smoothbottombar = { module = "com.github.ibrahimsn98:SmoothBottomBar", version.ref = "smoothbottombar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.samyak2403.iptvmine"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.samyak2403.iptvmine"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 5
         versionName = "1.0.4"
 
@@ -28,11 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures{
         viewBinding = true
@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    //for exoplayer
+    val media3_version = "1.6.0-beta01"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -47,12 +49,36 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    //for exoplayer
-    implementation(libs.exoplayerCore)
-    implementation(libs.exoplayerUi)
+    // Google Cast dependencies
+    implementation("com.google.android.gms:play-services-cast-framework:21.5.0")
+    implementation("androidx.mediarouter:mediarouter:1.7.0")
 
-    //for playing online content
-    implementation(libs.exoplayerDash)
+
+    implementation (libs.smoothbottombar)
+
+    //for exoplayer
+    // For media playback using ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:$media3_version")
+    // For building media playback UIs
+    implementation("androidx.media3:media3-ui:$media3_version")
+    // For DASH playback support with ExoPlayer
+    implementation("androidx.media3:media3-exoplayer-dash:$media3_version")
+    implementation("androidx.media3:media3-session:$media3_version")
+    implementation("androidx.media3:media3-common:$media3_version")
+    // For HLS playback support with ExoPlayer
+    implementation("androidx.media3:media3-exoplayer-hls:$media3_version")
+    implementation("androidx.media3:media3-common-ktx:$media3_version")
+    // For SmoothStreaming playback support with ExoPlayer
+    implementation("androidx.media3:media3-exoplayer-smoothstreaming:$media3_version")
+    // For loading data using the Cronet network stack
+    implementation("androidx.media3:media3-datasource-cronet:$media3_version")
+    // For loading data using librtmp
+    implementation("androidx.media3:media3-datasource-rtmp:$media3_version")
+    // For loading data using the OkHttp network stack
+    implementation("androidx.media3:media3-datasource-okhttp:$media3_version")
+
+
+    //for playing online content (DASH, HLS, M3U streams) - now using Media3
     implementation(libs.androidx.fragment)
     implementation(libs.cronet.embedded)
     testImplementation(libs.junit)
@@ -65,6 +91,21 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.8")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    
+    // Gauge library for speed test
+    implementation("com.github.Gruzer:simple-gauge-android:0.3.1")
+    //for vertical progress bar
+    implementation(libs.verticalSeekbar)
+
+    //for doubleTapFeature - exclude old ExoPlayer to avoid conflicts
+    implementation(libs.doubleTapPlayerView) {
+        exclude(group = "com.google.android.exoplayer", module = "exoplayer-core")
+        exclude(group = "com.google.android.exoplayer", module = "exoplayer-ui")
+        exclude(group = "com.google.android.exoplayer", module = "exoplayer-dash")
+        exclude(group = "com.google.android.exoplayer", module = "exoplayer-hls")
+    }
+
+
 
 //    implementation ("com.github.halilozercan:BetterVideoPlayer:2.0.0-alpha01")
 //    implementation ("com.github.halilozercan:BetterVideoPlayer:v1.1.0")

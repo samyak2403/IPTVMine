@@ -20,4 +20,8 @@
 
     <color name="primary">#1B023B</color>
     <color name="secondary">#FF03DAC5</color>
+    
+    <!-- Missing colors -->
+    <color name="box_white_text">#FFFFFF</color>
+    <color name="Red">#F44336</color>
 </resources>

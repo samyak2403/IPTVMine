@@ -1,218 +1,404 @@
 package com.samyak2403.iptvmine.provider
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samyak2403.iptvmine.model.Channel
 import kotlinx.coroutines.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
 class ChannelsProvider : ViewModel() {
 
-    private val _channels = MutableLiveData<List<Channel>>()
-    val channels: LiveData<List<Channel>> = _channels
+    private val _channels = MutableLiveData<List<Channel>>(emptyList())
+    val channels: LiveData<List<Channel>> get() = _channels
 
-    private val _filteredChannels = MutableLiveData<List<Channel>>()
-    val filteredChannels: LiveData<List<Channel>> = _filteredChannels
+    private val _filteredChannels = MutableLiveData<List<Channel>>(emptyList())
+    val filteredChannels: LiveData<List<Channel>> get() = _filteredChannels
 
     private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
+    val error: LiveData<String?> get() = _error
 
-    private val sourceUrl = "https://raw.githubusercontent.com/FunctionError/PiratesTv/main/combined_playlist.m3u"
+    private val _categories = MutableLiveData<List<String>>(emptyList())
+    val categories: LiveData<List<String>> get() = _categories
+
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private val sourceUrls = mutableListOf(
+        "https://bugsfreeweb.github.io/LiveTVCollector/LiveTV/India/LiveTV.m3u"
+    )
 
     private var fetchJob: Job? = null
 
-    // Fetch the M3U file from the provided URL
+    companion object {
+        private const val TAG = "ChannelsProvider"
+        private const val DEFAULT_LOGO_URL = "assets/images/ic_tv.png"
+        private const val CONNECT_TIMEOUT = 10000
+        private const val READ_TIMEOUT = 10000
+    }
+
+    fun getSourceUrls(): List<String> = synchronized(sourceUrls) {
+        sourceUrls.toList()
+    }
+
+    fun addSourceUrl(url: String) {
+        synchronized(sourceUrls) {
+            if (url.isNotBlank() && !sourceUrls.contains(url)) {
+                sourceUrls.add(url)
+            }
+        }
+    }
+
+    fun removeSourceUrl(url: String) {
+        synchronized(sourceUrls) {
+            sourceUrls.remove(url)
+        }
+    }
+
+    fun setSourceUrls(urls: List<String>) {
+        synchronized(sourceUrls) {
+            sourceUrls.clear()
+            sourceUrls.addAll(urls.filter { it.isNotBlank() })
+        }
+    }
+
     fun fetchM3UFile() {
-        fetchJob?.cancel() // Cancel any ongoing fetch
+        fetchJob?.cancel()
+
+        val sourceUrlsSnapshot = synchronized(sourceUrls) {
+            if (sourceUrls.isEmpty()) {
+                _error.postValue("No source URLs configured")
+                _isLoading.postValue(false)
+                return
+            }
+            sourceUrls.toList()
+        }
+
+        _isLoading.postValue(true)
 
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val urlConnection = (URL(sourceUrl).openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 10000 // 10 seconds timeout
-                    readTimeout = 10000
+            val allChannels = mutableListOf<Channel>()
+            val errorMessages = StringBuilder()
+            var successCount = 0
+            val totalSources = sourceUrlsSnapshot.size
+
+            for ((index, sourceUrl) in sourceUrlsSnapshot.withIndex()) {
+                var connection: HttpURLConnection? = null
+                try {
+                    Log.d(TAG, "Fetching source ${index + 1}/$totalSources: $sourceUrl")
+                    
+                    val url = URL(sourceUrl)
+                    connection = url.openConnection() as HttpURLConnection
+                    connection.connectTimeout = CONNECT_TIMEOUT
+                    connection.readTimeout = READ_TIMEOUT
+                    connection.requestMethod = "GET"
+                    connection.setRequestProperty("User-Agent", "IPTVmine/1.0 (Android)")
+                    connection.setRequestProperty("Accept", "*/*")
+                    connection.instanceFollowRedirects = true
+
+                    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                        val content = BufferedReader(InputStreamReader(connection.inputStream)).use { reader ->
+                            val stringBuilder = StringBuilder()
+                            var line: String?
+                            while (reader.readLine().also { line = it } != null) {
+                                stringBuilder.append(line).append("\n")
+                            }
+                            stringBuilder.toString()
+                        }
+
+                        val channels = parseM3UFile(content)
+                        allChannels.addAll(channels)
+                        successCount++
+                        
+                        Log.d(TAG, "Loaded ${channels.size} channels from source ${index + 1}")
+                    } else {
+                        errorMessages.append("Source ${index + 1}: HTTP ${connection.responseCode}\n")
+                    }
+                } catch (e: java.net.UnknownHostException) {
+                    errorMessages.append("Source ${index + 1}: No internet connection or DNS error\n")
+                    Log.e(TAG, "Network error for source ${index + 1}", e)
+                } catch (e: java.net.SocketTimeoutException) {
+                    errorMessages.append("Source ${index + 1}: Connection timeout\n")
+                    Log.e(TAG, "Timeout for source ${index + 1}", e)
+                } catch (e: java.io.IOException) {
+                    errorMessages.append("Source ${index + 1}: Network I/O error - ${e.message}\n")
+                    Log.e(TAG, "I/O error for source ${index + 1}", e)
+                } catch (e: Exception) {
+                    errorMessages.append("Source ${index + 1}: ${e.localizedMessage ?: e.message ?: "Unknown error"}\n")
+                    Log.e(TAG, "Error fetching source ${index + 1}", e)
+                } finally {
+                    connection?.disconnect()
                 }
+            }
 
-                urlConnection.inputStream.bufferedReader().use { reader ->
-                    val fileText = reader.readText()
-                    val tempChannels = parseM3UFile(fileText)
+            withContext(Dispatchers.Main) {
+                if (allChannels.isNotEmpty()) {
+                    _channels.value = allChannels
+                    updateCategories(allChannels)
+                    
+                    _error.value = if (successCount < totalSources && errorMessages.isNotEmpty()) {
+                        "Loaded $successCount/$totalSources sources. Errors:\n$errorMessages"
+                    } else null
+                    
+                    Log.d(TAG, "Total channels: ${allChannels.size}")
+                } else {
+                    _error.value = if (errorMessages.isNotEmpty()) {
+                        "Failed to fetch channels from all sources:\n$errorMessages"
+                    } else {
+                        "Failed to fetch channels: No data available"
+                    }
+                }
+                _isLoading.value = false
+            }
+        }
+    }
 
-                    // Update LiveData on the main thread
+    fun fetchFromSingleSource(sourceUrl: String) {
+        fetchJob?.cancel()
+        _isLoading.postValue(true)
+
+        fetchJob = viewModelScope.launch(Dispatchers.IO) {
+            var connection: HttpURLConnection? = null
+            try {
+                val url = URL(sourceUrl)
+                connection = url.openConnection() as HttpURLConnection
+                connection.connectTimeout = CONNECT_TIMEOUT
+                connection.readTimeout = READ_TIMEOUT
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("User-Agent", "IPTVmine/1.0 (Android)")
+                connection.setRequestProperty("Accept", "*/*")
+                connection.instanceFollowRedirects = true
+
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    val content = BufferedReader(InputStreamReader(connection.inputStream)).use { reader ->
+                        val stringBuilder = StringBuilder()
+                        var line: String?
+                        while (reader.readLine().also { line = it } != null) {
+                            stringBuilder.append(line).append("\n")
+                        }
+                        stringBuilder.toString()
+                    }
+
+                    val channels = parseM3UFile(content)
+                    
                     withContext(Dispatchers.Main) {
-                        _channels.value = tempChannels
+                        _channels.value = channels
+                        updateCategories(channels)
                         _error.value = null
                     }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _error.value = "Error: HTTP ${connection.responseCode}"
+                    }
+                }
+            } catch (e: java.net.UnknownHostException) {
+                withContext(Dispatchers.Main) {
+                    _error.value = "Network Error: No internet connection or unable to resolve host. Please check your connection."
+                }
+            } catch (e: java.net.SocketTimeoutException) {
+                withContext(Dispatchers.Main) {
+                    _error.value = "Network Error: Connection timeout. Please check your internet speed."
+                }
+            } catch (e: java.io.IOException) {
+                withContext(Dispatchers.Main) {
+                    _error.value = "Network Error: ${e.message ?: "Unable to connect to server"}"
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    _error.value = "Failed to fetch channels: ${e.message}"
+                    _error.value = "Error: ${e.localizedMessage ?: e.message ?: "Unknown error occurred"}"
+                }
+            } finally {
+                connection?.disconnect()
+                withContext(Dispatchers.Main) {
+                    _isLoading.value = false
                 }
             }
         }
     }
 
-    // Parse M3U file content and return a list of Channel objects
     private fun parseM3UFile(fileText: String): List<Channel> {
+        Log.d(TAG, "Starting to parse M3U file, content length: ${fileText.length}")
+        
         val lines = fileText.split("\n")
-        val tempChannels = mutableListOf<Channel>()
-
+        val channelsList = ArrayList<Channel>(lines.size / 2)
+        
         var name: String? = null
-        var logoUrl: String = getDefaultLogoUrl()
+        var logoUrl = DEFAULT_LOGO_URL
         var streamUrl: String? = null
+        var category: String? = null
+        
+        var validUrlCount = 0
+        var invalidUrlCount = 0
 
         for (line in lines) {
             when {
                 line.startsWith("#EXTINF:") -> {
                     name = extractChannelName(line)
-                    logoUrl = extractLogoUrl(line) ?: getDefaultLogoUrl()
+                    logoUrl = extractLogoUrl(line) ?: DEFAULT_LOGO_URL
+                    category = extractCategory(line)
                 }
-                line.isNotEmpty() -> {
-                    streamUrl = line
-                    if (!name.isNullOrEmpty() && streamUrl != null) {
-                        tempChannels.add(
-                            Channel(
-                                name = name,
-                                logoUrl = logoUrl,
-                                streamUrl = streamUrl
+                line.trim().isNotEmpty() -> {
+                    if (isValidStreamUrl(line)) {
+                        streamUrl = line
+                        validUrlCount++
+                        
+                        if (!name.isNullOrEmpty() && !streamUrl.isNullOrEmpty()) {
+                            channelsList.add(
+                                Channel(
+                                    name = name,
+                                    logoUrl = logoUrl,
+                                    streamUrl = streamUrl,
+                                    category = category ?: "Uncategorized"
+                                )
                             )
-                        )
+                            Log.d(TAG, "Added channel: $name with URL: ${streamUrl.take(50)}")
+                        }
+                        
+                        name = null
+                        logoUrl = DEFAULT_LOGO_URL
+                        category = null
+                    } else if (line.startsWith("http")) {
+                        invalidUrlCount++
+                        Log.d(TAG, "Invalid stream URL rejected: ${line.take(50)}")
                     }
-                    // Reset variables for the next channel
-                    name = null
-                    logoUrl = getDefaultLogoUrl()
-                    streamUrl = null
                 }
             }
         }
-        return tempChannels
-    }
 
-    private fun getDefaultLogoUrl(): String {
-        return "assets/images/ic_tv.png"
+        Log.d(TAG, "Parsing complete. Valid URLs: $validUrlCount, Invalid URLs: $invalidUrlCount, Total channels: ${channelsList.size}")
+        return channelsList
     }
 
     private fun extractChannelName(line: String): String? {
-        val parts = line.split(",")
-        return parts.lastOrNull()?.trim()
+        val commaIndex = line.lastIndexOf(",")
+        return if (commaIndex != -1 && commaIndex < line.length - 1) {
+            line.substring(commaIndex + 1).trim()
+        } else null
     }
 
     private fun extractLogoUrl(line: String): String? {
         val parts = line.split("\"")
-        return when {
-            parts.size > 1 && isValidUrl(parts[1]) -> parts[1]
-            parts.size > 5 && isValidUrl(parts[5]) -> parts[5]
-            else -> null
+        return parts.firstOrNull { isValidUrl(it) }
+    }
+
+    private fun extractCategory(line: String): String? {
+        val lowerLine = line.lowercase()
+        
+        var index = lowerLine.indexOf("group-title=")
+        if (index != -1) {
+            val startQuote = line.indexOf('"', index)
+            if (startQuote != -1) {
+                val endQuote = line.indexOf('"', startQuote + 1)
+                if (endQuote != -1) {
+                    val cat = line.substring(startQuote + 1, endQuote).trim()
+                    return if (cat.isEmpty()) "Uncategorized" else cat
+                }
+            }
         }
+
+        index = lowerLine.indexOf("tvg-group=")
+        if (index != -1) {
+            val startQuote = line.indexOf('"', index)
+            if (startQuote != -1) {
+                val endQuote = line.indexOf('"', startQuote + 1)
+                if (endQuote != -1) {
+                    val cat = line.substring(startQuote + 1, endQuote).trim()
+                    return if (cat.isEmpty()) "Uncategorized" else cat
+                }
+            }
+        }
+
+        return "Uncategorized"
     }
 
-    private fun isValidUrl(url: String): Boolean {
-        return url.startsWith("https") || url.startsWith("http")
+    private fun isValidUrl(url: String?): Boolean {
+        return url != null && (url.startsWith("http://") || url.startsWith("https://"))
     }
 
-    // Filter channels based on the user query
+    private fun isValidStreamUrl(url: String): Boolean {
+        if (!isValidUrl(url)) return false
+
+        return url.contains(".m3u8") || url.contains(".mp4") || url.contains(".avi") || 
+               url.contains(".mkv") || url.contains(".ts") || url.contains(".mpd") ||
+               url.contains("stream") || url.contains("live") ||
+               (url.startsWith("http") && url.split(":").size >= 3)
+    }
+
     fun filterChannels(query: String) {
-        _channels.value?.let { channelList ->
-            val filtered = channelList.filter { it.name.contains(query, ignoreCase = true) }
-            _filteredChannels.value = filtered
+        val allChannels = _channels.value ?: emptyList()
+        val lowerCaseQuery = query.lowercase()
+        val filtered = ArrayList<Channel>(minOf(50, allChannels.size))
+        
+        for (channel in allChannels) {
+            if (channel.name.lowercase().contains(lowerCaseQuery)) {
+                filtered.add(channel)
+            }
         }
+        _filteredChannels.postValue(filtered)
     }
 
-    // Cancel any ongoing fetch when ViewModel is cleared
+    fun filterChannelsByCategory(category: String?) {
+        val allChannels = _channels.value ?: emptyList()
+        
+        _filteredChannels.postValue(
+            if (category.isNullOrEmpty() || category == "All") {
+                ArrayList(allChannels)
+            } else {
+                val filtered = ArrayList<Channel>()
+                for (channel in allChannels) {
+                    if (category == channel.category) {
+                        filtered.add(channel)
+                    }
+                }
+                filtered
+            }
+        )
+    }
+
+    fun filterChannelsByQueryAndCategory(query: String?, category: String?) {
+        val allChannels = _channels.value ?: emptyList()
+        val lowerCaseQuery = query?.lowercase() ?: ""
+        val filtered = ArrayList<Channel>()
+
+        for (channel in allChannels) {
+            val categoryMatch = category.isNullOrEmpty() || category == "All" || category == channel.category
+            val queryMatch = lowerCaseQuery.isEmpty() || channel.name.lowercase().contains(lowerCaseQuery)
+
+            if (categoryMatch && queryMatch) {
+                filtered.add(channel)
+            }
+        }
+        _filteredChannels.postValue(filtered)
+    }
+
+    private fun updateCategories(channelList: List<Channel>) {
+        if (channelList.isEmpty()) {
+            _categories.postValue(emptyList())
+            return
+        }
+
+        val uniqueCategories = HashSet<String>()
+        for (channel in channelList) {
+            val cat = channel.category
+            if (!cat.isNullOrEmpty()) {
+                uniqueCategories.add(cat)
+            }
+        }
+
+        val categoryList = ArrayList(uniqueCategories).apply {
+            sort()
+            add(0, "All")
+        }
+        _categories.postValue(categoryList)
+    }
+
     override fun onCleared() {
         super.onCleared()
         fetchJob?.cancel()
     }
 }
-
-
-//
-//import androidx.lifecycle.LiveData
-//import androidx.lifecycle.MutableLiveData
-//import androidx.lifecycle.ViewModel
-//import com.samyak2403.iptvmine.model.Channel
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.launch
-//import kotlinx.coroutines.withContext
-//import java.net.HttpURLConnection
-//import java.net.URL
-//
-//
-//
-//class ChannelsProvider : ViewModel() {
-//
-//    private val _channels = MutableLiveData<List<Channel>>()
-//    val channels: LiveData<List<Channel>> = _channels
-//
-//    private val _filteredChannels = MutableLiveData<List<Channel>>()
-//    val filteredChannels: LiveData<List<Channel>> = _filteredChannels
-//
-////    private val sourceUrl = "https://raw.githubusercontent.com/aniketda/iptv2050/main/iptv"
-//    private val sourceUrl = "https://raw.githubusercontent.com/FunctionError/PiratesTv/main/combined_playlist.m3u'"
-//
-//    // Fetch the M3U file from the provided URL
-//    fun fetchM3UFile() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val url = URL(sourceUrl)
-//            val urlConnection = url.openConnection() as HttpURLConnection
-//            try {
-//                val fileText = urlConnection.inputStream.bufferedReader().readText()
-//                val lines = fileText.split("\n")
-//
-//                val tempChannels = mutableListOf<Channel>()
-//
-//                var name: String? = null
-//                var logoUrl: String? = null
-//                var streamUrl: String? = null
-//
-//                for (line in lines) {
-//                    when {
-//                        line.startsWith("#EXTINF:") -> {
-//                            val parts = line.split(",")
-//                            name = parts.getOrNull(1)
-//                            val logoParts = parts[0].split("\"")
-//                            logoUrl = if (logoParts.size > 3) {
-//                                logoParts[3]
-//                            } else {
-//                                "https://fastly.picsum.photos/id/125/536/354.jpg?hmac=EYT3s6VXrAoggrr4fXsOIIcQ3Grc13fCmXkqcE2FusY"
-//                            }
-//                        }
-//                        line.isNotEmpty() -> {
-//                            streamUrl = line
-//                            if (!name.isNullOrEmpty()) {
-//                                tempChannels.add(
-//                                    Channel(
-//                                        name = name,
-//                                        logoUrl = logoUrl ?: "https://fastly.picsum.photos/id/928/200/200.jpg?hmac=5MQxbf-ANcu87ZaOn5sOEObpZ9PpJfrOImdC7yOkBlg",
-//                                        streamUrl = streamUrl
-//                                    )
-//                                )
-//                            }
-//                            // Reset variables for the next channel
-//                            name = null
-//                            logoUrl = null
-//                            streamUrl = null
-//                        }
-//                    }
-//                }
-//
-//                // Update LiveData on the main thread
-//                withContext(Dispatchers.Main) {
-//                    _channels.value = tempChannels
-//                }
-//            } finally {
-//                urlConnection.disconnect()
-//            }
-//        }
-//    }
-//
-//    // Filter channels based on the search query
-//    fun filterChannels(query: String) {
-//        val filtered = _channels.value?.filter {
-//            it.name.contains(query, ignoreCase = true)
-//        } ?: emptyList()
-//        _filteredChannels.value = filtered
-//    }
-//}
