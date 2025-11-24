@@ -29,7 +29,7 @@ By working on this app, we aim to:
 ## Screenshots
 
 **TV Channels** | **Live**
-| <img src="screensorts/1.png" width="250px"/> | <img src="screensorts/2.png" width="250px"/> | <img src="screensorts/3.png" width="250px"/> |
+| <img src="screensorts/1.png" width="250px"/> | <img src="screensorts/2.png" width="250px"/> | <img src="screensorts/4.png" width="250px"/> |
 |---------------------------------------------|---------------------------------------------|---------------------------------------------|
 
 <img src="screensorts/3.png" width="250px"/>  | 
