@@ -44,12 +44,19 @@ class AboutFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // Dark mode switch
+        // Dark mode switch - automatically updates colors by recreating activity
         binding.switchDarkMode.setOnCheckChangeListener(object : com.samyak.custom_switch.MaterialCustomSwitch.OnCheckChangeListener {
             override fun onCheckChanged(isChecked: Boolean) {
+                // Save theme preference
                 ThemeManager.setDarkMode(requireContext(), isChecked)
+                
+                // Show feedback message
                 val message = if (isChecked) "Dark mode enabled" else "Light mode enabled"
                 android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
+                
+                // Recreate activity to apply theme changes immediately
+                // This automatically updates all colors based on the new theme
+                requireActivity().recreate()
             }
         })
 
@@ -58,14 +65,6 @@ class AboutFragment : Fragment() {
             val intent = Intent(requireContext(), AppInfoActivity::class.java)
             startActivity(intent)
         }
-
-        // Internet Speed Tester
-        binding.CardInternetSpeed.setOnClickListener {
-//            val intent = Intent(requireContext(), com.samyak2403.iptvmine.InternetSpeed.InternetSpeedActivity::class.java)
-//            startActivity(intent)
-        }
-
-
     }
 
 

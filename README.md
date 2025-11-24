@@ -30,12 +30,12 @@ By working on this app, we aim to:
 
 **TV Channels** | **Live**
 :-------------------------:|:-------------------------:
-<img src="Image/1.png" width="250px"/>  |  <img src="Image/2.png" width="250px"/> 
-<img src="Image/3.png" width="250px"/>  |  <img src="4.png" width="250px"/>
+<img src="screensorts/1.png" width="250px"/>  |  <img src="screensorts/2.png" width="250px"/> 
+<img src="screensorts/3.png" width="250px"/>  |  <img src="screensorts/4.png" width="250px"/>
 
 **TV Channels** | **Live**
 :-------------------------:|:-------------------------:
-<img src="Image/4.png" width="450px"/>  |  <img src="Image/4.png" width="450px"/> 
+<img src="screensorts/4.png" width="450px"/>  |  <img src="screensorts/4.png" width="450px"/> 
 
 **TV Mode** | **Live**
 :-------------------------:|:-------------------------:
@@ -98,9 +98,9 @@ By working on this app, we aim to:
 
 <a href="https://star-history.com/#samyak2403/IPTVmine&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=samyak2403/IPTVmine&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=samyak2403/IPTVmine&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=samyak2403/IPTVmine&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=samyak2403/IPTVMine&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=samyak2403/IPTVMine&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=samyak2403/IPTVMine&type=Date" />
  </picture>
 </a>
 

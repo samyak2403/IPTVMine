@@ -1,19 +1,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main"
-    android:background="?android:attr/colorBackground"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:fitsSystemWindows="true"
+    android:background="?android:attr/colorBackground">
 
-    <!-- Toolbar -->
+    <!-- Status Bar Background -->
+    <View
+        android:id="@+id/statusBarBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/bg_color"/>
+
+    <!-- Toolbar positioned below status bar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:layout_below="@id/statusBarBackground"
         android:background="@color/bg_color"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:layout_alignParentTop="true">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -38,12 +49,12 @@
                 android:layout_toStartOf="@+id/search_icon"
                 android:background="@android:color/transparent"
                 android:hint="Search"
-                android:textColorHint="@android:color/white"
-                android:textColor="@android:color/white"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:padding="8dp"
                 android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
                 android:visibility="gone" />
 
             <ImageView
@@ -64,8 +75,8 @@
         android:id="@+id/fragmentContainerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:layout_above="@id/bottomBar" />
+        android:layout_above="@id/bottomBar"
+        android:layout_below="@id/toolbar" />
 
     <!-- Smooth Bottom Bar -->
     <me.ibrahimsn.lib.SmoothBottomBar
@@ -77,7 +88,7 @@
         app:iconSize="24dp"
         app:indicatorRadius="10dp"
         app:itemPadding="10dp"
+        app:menu="@menu/menu_bottom"
         app:sideMargins="10dp"
-        app:textSize="14sp"
-        app:menu="@menu/menu_bottom" />
+        app:textSize="14sp" />
 </RelativeLayout>

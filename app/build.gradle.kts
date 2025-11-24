@@ -34,7 +34,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
 }
@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.constraintlayout)
 
     // Google Cast dependencies
@@ -54,7 +55,7 @@ dependencies {
     implementation("androidx.mediarouter:mediarouter:1.7.0")
 
 
-    implementation (libs.smoothbottombar)
+    implementation(libs.smoothbottombar)
 
     //for exoplayer
     // For media playback using ExoPlayer
@@ -87,20 +88,20 @@ dependencies {
     // Fragment library
     implementation("androidx.fragment:fragment-ktx:1.6.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    
+
     // CircleImageView for circular images
     implementation("de.hdodenhof:circleimageview:3.1.0")
-    
+
     // Lottie for animations
     implementation(libs.lottie)
-    
+
     // Custom Switch Module
     implementation(project(":custom-switch"))
 
     implementation("com.google.code.gson:gson:2.8.8")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
-    
+
     // Gauge library for speed test
     implementation("com.github.Gruzer:simple-gauge-android:0.3.1")
     //for vertical progress bar
@@ -115,6 +116,10 @@ dependencies {
     }
 
 
+    //speed tester
+    implementation("com.github.bertrandmartel:speed-test-lib:1.32.1")
+    //SpeedView
+    implementation("com.github.anastr:speedviewlib:1.6.1")
 
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0") // For older versions of LiveData
 

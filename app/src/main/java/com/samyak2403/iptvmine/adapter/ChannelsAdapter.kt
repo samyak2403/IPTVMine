@@ -42,6 +42,8 @@ class ChannelsAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
+    fun getChannels(): List<Channel> = channels
+
     inner class ChannelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val logoImageView: ImageView = itemView.findViewById(R.id.logoImageView)
         private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)

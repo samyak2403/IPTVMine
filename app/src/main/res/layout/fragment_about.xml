@@ -1,187 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
 
-
-    <!-- CircleImageView for Profile -->
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/app_logo"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/ic_tv"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/appName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/app_name"
-        android:textColor="@color/bg_color"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@id/app_logo"
-        app:layout_constraintStart_toStartOf="@id/app_logo"
-        app:layout_constraintTop_toBottomOf="@id/app_logo" />
+        android:orientation="vertical">
 
-    <!-- Cards Section -->
-    <!--    <androidx.cardview.widget.CardView-->
-    <!--        android:id="@+id/Live_user_card_internet_speed"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_margin="8dp"-->
-    <!--        app:cardCornerRadius="8dp"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/appName">-->
+        <!-- App Logo -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/app_logo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_tv"
+            app:civ_border_color="?attr/colorPrimary"
+            app:civ_border_width="2dp" />
 
-    <!--        <RelativeLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:padding="16dp">-->
+        <!-- App Name -->
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/app_name"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <!--            &lt;!&ndash; Lottie Animation &ndash;&gt;-->
-    <!--            <com.airbnb.lottie.LottieAnimationView-->
-    <!--                android:id="@+id/live_user_card_animation"-->
-    <!--                android:layout_width="48dp"-->
-    <!--                android:layout_height="48dp"-->
-    <!--                android:layout_alignParentStart="true"-->
-    <!--                app:lottie_autoPlay="true"-->
-    <!--                app:lottie_loop="true"-->
-    <!--                app:lottie_rawRes="@raw/speedtester" />-->
-
-    <!--            &lt;!&ndash; Text &ndash;&gt;-->
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/tvLiveData"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:layout_centerVertical="true"-->
-    <!--                android:layout_marginStart="16dp"-->
-    <!--                android:layout_toEndOf="@id/live_user_card_animation"-->
-    <!--                android:text="Live Users"-->
-    <!--                android:textSize="16sp" />-->
-    <!--        </RelativeLayout>-->
-    <!--    </androidx.cardview.widget.CardView>-->
-
-
-    <!-- Dark Mode Card -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_dark_mode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appName">
+        <!-- Theme Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="19dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="19dp"
+            android:paddingBottom="8dp"
+            android:text="Theme"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <com.samyak.custom_switch.MaterialCustomSwitch
             android:id="@+id/switch_dark_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingStart="19dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="19dp"
+            android:paddingBottom="16dp"
+            app:checked="false"
+
             app:textHead="Dark Mode"
-            app:textOn="Enabled"
             app:textOff="Disabled"
-            app:checked="false" />
+            app:textOn="Enabled" />
 
-    </androidx.cardview.widget.CardView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
-    <!-- About App Card -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_about_app"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_dark_mode">
-
-        <RelativeLayout
+        <!-- Other Section -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:paddingStart="19dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="19dp"
+            android:paddingBottom="8dp"
+            android:text="Other"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-            <!-- Lottie Animation -->
+        <LinearLayout
+            android:id="@+id/card_about_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="19dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="19dp"
+            android:paddingBottom="16dp">
+
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/about_app_animation"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignParentStart="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 app:lottie_autoPlay="true"
                 app:lottie_rawRes="@raw/app_info" />
 
-            <!-- Text -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/about_app_animation"
                 android:text="About App"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp" />
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
+        </LinearLayout>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/Card_internet_speed"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_about_app">
-
-        <RelativeLayout
+        <View
             android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <!-- App Version -->
+        <TextView
+            android:id="@+id/tvAppVersion"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="App Version:"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="12sp" />
 
-            <!-- Lottie Animation -->
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/card_animation"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignParentStart="true"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="false"
-                app:lottie_rawRes="@raw/speedtester" />
+    </LinearLayout>
 
-            <!-- Text -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/card_animation"
-                android:text="Internet Speed Checker"
-                android:textSize="16sp" />
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-
-
-
-    <TextView
-        android:id="@+id/tvAppVersion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="App Version:"
-        android:textAlignment="center"
-        android:textColor="@color/bg_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
