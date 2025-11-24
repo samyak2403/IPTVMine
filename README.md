@@ -35,7 +35,7 @@ By working on this app, we aim to:
 
 **TV Channels** | **Live**
 :-------------------------:|:-------------------------:
-<img src="screensorts/4.png" width="450px"/>  |  <img src="screensorts/4.png" width="450px"/> 
+<img src="screensorts/5.png" width="450px"/>  |  <img src="screensorts/5.png" width="450px"/> 
 
 **TV Mode** | **Live**
 :-------------------------:|:-------------------------:
