@@ -29,9 +29,10 @@ By working on this app, we aim to:
 ## Screenshots
 
 **TV Channels** | **Live**
-:-------------------------:|:-------------------------:
-<img src="screensorts/1.png" width="250px"/>  |  <img src="screensorts/2.png" width="250px"/> 
-<img src="screensorts/3.png" width="250px"/>  |  <img src="screensorts/4.png" width="250px"/>
+| <img src="screensorts/1.png" width="250px"/> | <img src="screensorts/2.png" width="250px"/> | <img src="screensorts/3.png" width="250px"/> |
+|---------------------------------------------|---------------------------------------------|---------------------------------------------|
+
+<img src="screensorts/3.png" width="250px"/>  | 
 
 **TV Channels** | **Live**
 :-------------------------:|:-------------------------:
@@ -53,7 +54,7 @@ By working on this app, we aim to:
 
 ## Credits
 
-[Channel Source](https://github.com/FunctionError/PiratesTv)
+- A big thanks to [LiveTVCollector](https://github.com/bugsfreeweb/LiveTVCollector)
 
 ## Features
 - **500+ Indian TV Channels**: Enjoy a vast collection of channels from various genres.
