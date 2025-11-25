@@ -97,7 +97,7 @@ By working on this app, we aim to:
 - **Regional**
 ## Star History
 
-<a href="https://star-history.com/#samyak2403/IPTVmine&Date">
+<a href="https://star-history.com/#samyak2403/IPTVMine&Date">
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=samyak2403/IPTVMine&type=Date&theme=dark" />
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=samyak2403/IPTVMine&type=Date" />
