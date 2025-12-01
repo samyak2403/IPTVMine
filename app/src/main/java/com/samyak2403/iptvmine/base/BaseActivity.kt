@@ -1,8 +1,9 @@
-package com.samyak.urlplayer.base
+package com.samyak2403.iptvmine.base
 
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import java.util.Locale
 
@@ -10,7 +11,7 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         // Get saved language code
-        val languageCode = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val languageCode = newBase.getSharedPreferences("settings", MODE_PRIVATE)
             .getString("language", "") ?: ""
 
         // If no language is set, use system default
@@ -37,14 +38,14 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun updateLayoutDirection() {
-        val languageCode = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val languageCode = getSharedPreferences("settings", MODE_PRIVATE)
             .getString("language", "") ?: ""
         
         // Set RTL layout direction for Arabic
         if (languageCode == "ar") {
-            window.decorView.layoutDirection = android.view.View.LAYOUT_DIRECTION_RTL
+            window.decorView.layoutDirection = View.LAYOUT_DIRECTION_RTL
         } else {
-            window.decorView.layoutDirection = android.view.View.LAYOUT_DIRECTION_LTR
+            window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         }
     }
 } 

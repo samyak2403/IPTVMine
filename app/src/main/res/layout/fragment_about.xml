@@ -34,7 +34,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Theme Section -->
+        <!-- Settings Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:paddingTop="16dp"
             android:paddingEnd="19dp"
             android:paddingBottom="8dp"
-            android:text="Theme"
+            android:text="Settings"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -57,8 +57,26 @@
             android:paddingEnd="19dp"
             android:paddingBottom="16dp"
             app:checked="false"
-
             app:textHead="Dark Mode"
+            app:textOff="Disabled"
+            app:textOn="Enabled" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <com.samyak.custom_switch.MaterialCustomSwitch
+            android:id="@+id/switch_notifications"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingStart="19dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="19dp"
+            android:paddingBottom="16dp"
+            app:checked="true"
+            app:textHead="Channel Notifications"
             app:textOff="Disabled"
             app:textOn="Enabled" />
 
@@ -115,7 +133,35 @@
             android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
 
+        <LinearLayout
+            android:id="@+id/card_terms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="19dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="19dp"
+            android:paddingBottom="16dp">
 
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/terms_animation"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:lottie_autoPlay="true"
+                app:lottie_rawRes="@raw/app_info" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Terms &amp; Conditions"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"

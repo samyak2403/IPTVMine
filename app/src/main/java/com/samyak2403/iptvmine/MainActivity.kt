@@ -1,22 +1,33 @@
 package com.samyak2403.iptvmine
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.samyak2403.iptvmine.databinding.ActivityMainBinding
+import com.samyak2403.iptvmine.notification.ChannelMonitorScheduler
 import com.samyak2403.iptvmine.screens.AboutFragment
 import com.samyak2403.iptvmine.screens.HomeFragment
 import com.samyak2403.iptvmine.utils.ThemeManager
+import java.util.Locale
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +35,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentFragmentIndex = 0
     private var isSearchVisible = false
+
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
+    }
+
+    // Voice search launcher
+    private val voiceSearchLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            if (!matches.isNullOrEmpty()) {
+                val voiceText = matches[0]
+                binding.searchEditText.setText(voiceText)
+                // Optionally trigger search automatically
+                // performSearch(voiceText)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.applyTheme(this)
@@ -58,11 +89,24 @@ class MainActivity : AppCompatActivity() {
             toggleSearch()
         }
 
+        // Setup mic icon click for voice search
+        binding.micIcon.setOnClickListener {
+            startVoiceSearch()
+        }
+
+        // Setup close icon click
+        binding.closeIcon.setOnClickListener {
+            toggleSearch()
+        }
+
         // Initialize with HomeFragment
         if (savedInstanceState == null) {
             replaceFragment(HomeFragment(), 0)
             binding.bottomBar.itemActiveIndex = 0
         }
+
+        // Start automatic channel monitoring
+        startAutomaticNotifications()
 
         // Set up SmoothBottomBar item selection listener
         binding.bottomBar.setOnItemSelectedListener { position ->
@@ -113,13 +157,37 @@ class MainActivity : AppCompatActivity() {
     private fun toggleSearch() {
         isSearchVisible = !isSearchVisible
         if (isSearchVisible) {
+            // Show search mode
             binding.searchEditText.visibility = View.VISIBLE
+            binding.closeIcon.visibility = View.VISIBLE
             binding.toolbarTitle.visibility = View.GONE
+            binding.searchIcon.visibility = View.GONE
+            binding.micIcon.visibility = View.GONE
             binding.searchEditText.requestFocus()
         } else {
+            // Show normal mode
             binding.searchEditText.visibility = View.GONE
+            binding.closeIcon.visibility = View.GONE
             binding.toolbarTitle.visibility = View.VISIBLE
+            binding.searchIcon.visibility = View.VISIBLE
+            binding.micIcon.visibility = View.VISIBLE
             binding.searchEditText.text.clear()
+        }
+    }
+
+    /**
+     * Start voice search using Android's speech recognition
+     */
+    private fun startVoiceSearch() {
+        try {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to search...")
+            }
+            voiceSearchLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Voice search not available", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -128,10 +196,16 @@ class MainActivity : AppCompatActivity() {
             0 -> {
                 binding.toolbarTitle.text = "IPTVmine"
                 binding.searchIcon.visibility = View.VISIBLE
+                binding.micIcon.visibility = View.VISIBLE
+                binding.closeIcon.visibility = View.GONE
+                binding.searchEditText.visibility = View.GONE
+                isSearchVisible = false
             }
             1 -> {
                 binding.toolbarTitle.text = "About"
                 binding.searchIcon.visibility = View.GONE
+                binding.micIcon.visibility = View.GONE
+                binding.closeIcon.visibility = View.GONE
                 binding.searchEditText.visibility = View.GONE
                 isSearchVisible = false
             }
@@ -150,6 +224,75 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+    /**
+     * Start automatic channel monitoring and notifications
+     * This runs automatically when app starts - no user action needed!
+     */
+    private fun startAutomaticNotifications() {
+        Log.d(TAG, "Starting automatic channel notifications...")
+
+        // Request notification permission for Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_REQUEST_CODE
+                )
+            } else {
+                scheduleChannelMonitoring()
+            }
+        } else {
+            scheduleChannelMonitoring()
+        }
+    }
+
+    private fun scheduleChannelMonitoring() {
+        // Schedule automatic monitoring
+        ChannelMonitorScheduler.scheduleMonitoring(this)
+        Log.d(TAG, "Automatic channel monitoring started successfully!")
+        
+        // Check if this is first time showing notification message
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val hasShownNotificationMessage = prefs.getBoolean("notification_message_shown", false)
+        
+        if (!hasShownNotificationMessage) {
+            // Show toast only first time
+            Toast.makeText(
+                this,
+                "Automatic channel notifications enabled",
+                Toast.LENGTH_SHORT
+            ).show()
+            
+            // Mark as shown
+            prefs.edit().putBoolean("notification_message_shown", true).apply()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                scheduleChannelMonitoring()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Notification permission denied. You won't receive channel alerts.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
 
     override fun onBackPressed() {
         if (isSearchVisible) {

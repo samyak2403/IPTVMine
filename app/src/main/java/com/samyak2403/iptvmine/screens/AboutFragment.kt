@@ -41,6 +41,11 @@ class AboutFragment : Fragment() {
 
         // Set dark mode switch state
         binding.switchDarkMode.setChecked(ThemeManager.isDarkModeEnabled(requireContext()))
+        
+        // Set notification switch state
+        val prefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val notificationsEnabled = prefs.getBoolean("notifications_enabled", true)
+        binding.switchNotifications.setChecked(notificationsEnabled)
     }
 
     private fun setupClickListeners() {
@@ -59,10 +64,40 @@ class AboutFragment : Fragment() {
                 requireActivity().recreate()
             }
         })
+        
+        // Notification switch - enable/disable automatic channel notifications
+        binding.switchNotifications.setOnCheckChangeListener(object : com.samyak.custom_switch.MaterialCustomSwitch.OnCheckChangeListener {
+            override fun onCheckChanged(isChecked: Boolean) {
+                // Save notification preference
+                val prefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                prefs.edit().putBoolean("notifications_enabled", isChecked).apply()
+                
+                // Show feedback message
+                val message = if (isChecked) {
+                    "Channel notifications enabled"
+                } else {
+                    "Channel notifications disabled"
+                }
+                android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
+                
+                // Start or stop monitoring based on preference
+                if (isChecked) {
+                    com.samyak2403.iptvmine.notification.ChannelMonitorScheduler.scheduleMonitoring(requireContext())
+                } else {
+                    com.samyak2403.iptvmine.notification.ChannelMonitorScheduler.cancelMonitoring(requireContext())
+                }
+            }
+        })
 
         // About App Card
         binding.cardAboutApp.setOnClickListener {
             val intent = Intent(requireContext(), AppInfoActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Terms & Conditions Card
+        binding.cardTerms.setOnClickListener {
+            val intent = Intent(requireContext(), TermsActivity::class.java)
             startActivity(intent)
         }
     }

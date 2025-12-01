@@ -11,8 +11,8 @@ android {
         applicationId = "com.samyak2403.iptvmine"
         minSdk = 24
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -122,5 +122,8 @@ dependencies {
     implementation("com.github.anastr:speedviewlib:1.6.1")
 
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0") // For older versions of LiveData
+
+    // WorkManager for background tasks
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
 }
