@@ -130,7 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="• 500+ Indian TV Channels from various genres\n• High-Quality Streaming (HD available)\n• Multi-Language Support\n• User-Friendly Interface with quick navigation\n• Favorite Channels bookmarking\n• Search Functionality by name or category\n• Regular Updates with new channels\n• Dark Mode support"
+                android:text="• 500+ Indian TV Channels from various genres\n• High-Quality Streaming (HD available)\n• Multi-Language Support\n• User-Friendly Interface with quick navigation\n• Favorite Channels bookmarking\n• Search Functionality by name or category\n• Regular Updates with new channels\n• Beautiful Dark Mode interface"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp" />
 

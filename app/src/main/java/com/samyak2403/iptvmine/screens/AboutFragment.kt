@@ -38,9 +38,6 @@ class AboutFragment : Fragment() {
     private fun setupViews() {
         // Display app version
         binding.tvAppVersion.text = getAppVersion()
-
-        // Set dark mode switch state
-        binding.switchDarkMode.setChecked(ThemeManager.isDarkModeEnabled(requireContext()))
         
         // Set notification switch state
         val prefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
@@ -49,22 +46,6 @@ class AboutFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // Dark mode switch - automatically updates colors by recreating activity
-        binding.switchDarkMode.setOnCheckChangeListener(object : com.samyak.custom_switch.MaterialCustomSwitch.OnCheckChangeListener {
-            override fun onCheckChanged(isChecked: Boolean) {
-                // Save theme preference
-                ThemeManager.setDarkMode(requireContext(), isChecked)
-                
-                // Show feedback message
-                val message = if (isChecked) "Dark mode enabled" else "Light mode enabled"
-                android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
-                
-                // Recreate activity to apply theme changes immediately
-                // This automatically updates all colors based on the new theme
-                requireActivity().recreate()
-            }
-        })
-        
         // Notification switch - enable/disable automatic channel notifications
         binding.switchNotifications.setOnCheckChangeListener(object : com.samyak.custom_switch.MaterialCustomSwitch.OnCheckChangeListener {
             override fun onCheckChanged(isChecked: Boolean) {

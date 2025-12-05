@@ -48,25 +48,6 @@
             android:textStyle="bold" />
 
         <com.samyak.custom_switch.MaterialCustomSwitch
-            android:id="@+id/switch_dark_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:paddingStart="19dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="19dp"
-            android:paddingBottom="16dp"
-            app:checked="false"
-            app:textHead="Dark Mode"
-            app:textOff="Disabled"
-            app:textOn="Enabled" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <com.samyak.custom_switch.MaterialCustomSwitch
             android:id="@+id/switch_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

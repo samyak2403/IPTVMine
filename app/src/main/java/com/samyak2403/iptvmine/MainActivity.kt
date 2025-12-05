@@ -13,6 +13,8 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,6 +28,7 @@ import com.samyak2403.iptvmine.databinding.ActivityMainBinding
 import com.samyak2403.iptvmine.notification.ChannelMonitorScheduler
 import com.samyak2403.iptvmine.screens.AboutFragment
 import com.samyak2403.iptvmine.screens.HomeFragment
+import com.samyak2403.iptvmine.utils.InAppUpdateManager
 import com.samyak2403.iptvmine.utils.ThemeManager
 import java.util.Locale
 
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentFragmentIndex = 0
     private var isSearchVisible = false
+    private lateinit var inAppUpdateManager: InAppUpdateManager
 
     companion object {
         private const val TAG = "MainActivity"
@@ -56,12 +60,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // In-app update launcher
+    private val updateLauncher: ActivityResultLauncher<IntentSenderRequest> = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        inAppUpdateManager.handleUpdateResult(result.resultCode)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.applyTheme(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
+        // Initialize in-app update manager
+        inAppUpdateManager = InAppUpdateManager(this)
+        
+        // Check for updates on app start
+        checkForAppUpdates()
         
         // Setup custom status bar color
         setupStatusBar()
@@ -292,6 +309,30 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Check if there's a downloaded update waiting to be installed
+        inAppUpdateManager.checkForDownloadedUpdate()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister update listener to prevent memory leaks
+        inAppUpdateManager.unregisterListener()
+    }
+
+    /**
+     * Check for app updates using Google Play In-App Updates API
+     * Supports both immediate and flexible update flows
+     */
+    private fun checkForAppUpdates() {
+        Log.d(TAG, "Checking for app updates...")
+        inAppUpdateManager.checkForUpdate(
+            updateResultLauncher = updateLauncher,
+            preferImmediate = false // Set to true for immediate updates
+        )
     }
 
     override fun onBackPressed() {
