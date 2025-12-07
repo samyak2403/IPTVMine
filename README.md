@@ -2,7 +2,7 @@
 
 <img src="https://github.com/samyak2403/IPTVMine/blob/main/app/src/main/res/drawable/ic_tv.png" width="100px"/>
 
-![pv](https://pageview.vercel.app/?github_user=IPTVmine)
+![pv](https://pageview.vercel.app/?github_user=IPTVMine)
 
 
 
